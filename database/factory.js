@@ -39,8 +39,18 @@ Factory.blueprint('App/Models/Schema', (faker) => {
 
   return {
     name: faker.sentence({ words: 3 }),
-    version_major: faker.integer(({ min: 0, max: 1 })),
-    version_minor: faker.integer(({ min: 0, max: 5 })),
-    version_patch: faker.integer(({ min: 0, max: 10 })),
+    versionMajor: faker.integer(({ min: 0, max: 1 })),
+    versionMinor: faker.integer(({ min: 0, max: 5 })),
+    versionPatch: faker.integer(({ min: 0, max: 10 })),
+  }
+})
+
+
+Factory.blueprint('App/Models/FragmentSchema', (faker) => {
+
+  seedModelIfNeeded('FragmentSchema', faker)
+
+  return {
+    name: faker.sentence({ words: 3 }),
   }
 })

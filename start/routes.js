@@ -19,4 +19,10 @@ Route.get('/', ({ request }) => {
   return { greeting: 'Hello world in JSON' }
 })
 
-Route.resource('/schemas', 'SchemaController')
+
+Route.get('schemas/select', 'SchemaController.select')
+Route.resource('schemas', 'SchemaController')
+  .validator(new Map([
+    [['schemas.store', 'schemas.update'], ['Schema']],
+  ]))
+  .apiOnly()

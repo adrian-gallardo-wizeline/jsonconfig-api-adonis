@@ -4,6 +4,20 @@ const Model = use('Model')
 
 class Schema extends Model {
 
+  static boot() {
+    super.boot()
+    this.addHook('beforeCreate', 'SchemaHook.assignFirstVersion')
+    this.addHook('afterFind', schema => {
+      schema.jsonSchema = schema.jsonSchema ? JSON.parse(schema.jsonSchema) : {}
+    })
+    this.addHook('afterFetch', schemas => {
+      schemas.forEach(schema => {
+        schema.jsonSchema = schema.jsonSchema ? JSON.parse(schema.jsonSchema) : {}
+      })
+      
+    })
+  }
+
   static get table() {
     return 'schema'
   }
@@ -13,20 +27,26 @@ class Schema extends Model {
   }
 
   static get hidden() {
-    return ['version_major', 'version_minor', 'version_patch', 'schema_id']
+    return ['versionMajor', 'versionMinor', 'versionPatch', 'parentSchemaId']
   }
 
-  getVersion({ version_major, version_minor, version_patch }) {
-    return `${version_major}.${version_minor}.${version_patch}`
+  getVersion({ versionMajor, versionMinor, versionPatch }) {
+    return  `${versionMajor}.${versionMinor}.${versionPatch}`
   }
 
   parentSchema() {
-    return this.hasOne('App/Models/Schema', 'schema_id', 'id')
+    return this.hasOne('App/Models/Schema', 'parentSchemaId', 'id')
   }
 
   childSchemas() {
-    return this.hasMany('App/Models/Schema', 'id', 'schema_id')
+    return this.hasMany('App/Models/Schema', 'id', 'parentSchemaId')
   }
+
+  fragmentSchemas() {
+    return this.belongsToMany('App/Models/FragmentSchema', 'schemaId', 'fragmentSchemaId')
+      .pivotModel('App/Models/SchemaFragmentSchema')
+  }
+  
 }
 
 module.exports = Schema
